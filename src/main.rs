@@ -52,29 +52,43 @@ fn is_possible(grid: &[[u8; 9]; 9], row: usize, col: usize, num: u8) -> bool {
         }
     }
 
-    let mut debut_raw_carre: usize = 0;
-    let mut debut_col_carre: usize = 0;
+    let debut_raw_carre = (row / 3) * 3;
+    let debut_col_carre = (col / 3) * 3;
 
-    for i in row..=9 {
-        if i != 0 && i % 3 == 0 {
-            debut_raw_carre = i - 3;
-            break;
-        }
-    }
-    for i in col..=9 {
-        if i != 0 && i % 3 == 0 {
-            debut_col_carre = i - 3;
-            break;
-        }
-    }
-    for l in debut_raw_carre..=debut_raw_carre + 3 {
-        for j in debut_col_carre..=debut_col_carre + 3 {
+    for l in debut_raw_carre..=debut_raw_carre + 2 {
+        for j in debut_col_carre..=debut_col_carre + 2 {
             if grid[l][j] == num {
                 return false;
             }
         }
     }
     return true;
+}
+
+// partie 3 : explorer les grilles possibles et retourner les solutions
+fn solve(grid: &[[u8; 9]; 9]) -> Vec<[[u8; 9]; 9]> {
+    // initialisation du tableau des solutions trouvées
+    let mut sols_founded: Vec<[[u8; 9]; 9]> = Vec::new();
+
+    for r in 0..9 {
+        for c in 0..9 {
+            if grid[r][c] == 0 {
+                for i in 1..=9 {
+                    if is_possible(&grid, r, c, i) {
+                        let mut nouvelle_grille = grid.clone();
+                        nouvelle_grille[r][c] = i;
+                        //print_grid(&nouvelle_grille);
+
+                        let solutions = solve(&nouvelle_grille);
+                        sols_founded.extend(solutions)
+                    }
+                }
+                return sols_founded;
+            }
+        }
+    }
+    sols_founded.push(*grid);
+    return sols_founded;
 }
 
 fn main() {
@@ -92,10 +106,16 @@ fn main() {
 
     print_grid(&grid);
 
-    for i in 1..=9 {
-        let value = is_possible(&grid, 0, 2, i);
-        if value {
-            print!(" Valeur possible :{} |", i);
-        };
+    // for i in 1..9 {
+    //     let value = is_possible(&grid, 0, 7, i);
+    //     println!(" pour {i} => {value}");
+    // }
+
+    let results = solve(&grid);
+
+    for r in &results {
+        print_grid(&r);
     }
+
+    println!("{} solution(s).", results.len());
 }
