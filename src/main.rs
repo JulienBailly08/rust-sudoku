@@ -46,8 +46,35 @@ fn print_grid(grid: &[[u8; 9]; 9]) {
 
 // partie 2 : tester une proposition pour une case
 fn is_possible(grid: &[[u8; 9]; 9], row: usize, col: usize, num: u8) -> bool {
-    // TODO
-    return false;
+    for a in 0..9 {
+        if grid[row][a] == num || grid[a][col] == num {
+            return false;
+        }
+    }
+
+    let mut debut_raw_carre: usize = 0;
+    let mut debut_col_carre: usize = 0;
+
+    for i in row..=9 {
+        if i != 0 && i % 3 == 0 {
+            debut_raw_carre = i - 3;
+            break;
+        }
+    }
+    for i in col..=9 {
+        if i != 0 && i % 3 == 0 {
+            debut_col_carre = i - 3;
+            break;
+        }
+    }
+    for l in debut_raw_carre..=debut_raw_carre + 3 {
+        for j in debut_col_carre..=debut_col_carre + 3 {
+            if grid[l][j] == num {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 fn main() {
@@ -64,4 +91,11 @@ fn main() {
     ];
 
     print_grid(&grid);
+
+    for i in 1..=9 {
+        let value = is_possible(&grid, 0, 2, i);
+        if value {
+            print!(" Valeur possible :{} |", i);
+        };
+    }
 }
